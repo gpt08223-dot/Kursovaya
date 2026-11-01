@@ -1,0 +1,9 @@
+.vs/
+bin/
+obj/
+.idea/
+.vscode/
+*.user
+*.suo
+TestResults/
+*.nupkg
