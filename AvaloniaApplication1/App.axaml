@@ -1,8 +1,403 @@
 ﻿<Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="AvaloniaApplication1.App"
-             RequestedThemeVariant="Default">
+             RequestedThemeVariant="Dark">
+    <Application.Resources>
+        <SolidColorBrush x:Key="BgBrush" Color="#121316" />
+        <SolidColorBrush x:Key="CardBrush" Color="#1A1C20" />
+        <SolidColorBrush x:Key="CardBorderBrush" Color="#282B30" />
+        <SolidColorBrush x:Key="TextBrush" Color="#F0F2F5" />
+        <SolidColorBrush x:Key="MutedBrush" Color="#8A9099" />
+        <SolidColorBrush x:Key="DimBrush" Color="#5D636D" />
+        <SolidColorBrush x:Key="AccentBrush" Color="#4F8EF7" />
+        <SolidColorBrush x:Key="AmberBrush" Color="#E58E5A" />
+        <SolidColorBrush x:Key="ControlBrush" Color="#202329" />
+        <SolidColorBrush x:Key="ControlBorderBrush" Color="#2A2E35" />
+    </Application.Resources>
+
     <Application.Styles>
         <FluentTheme />
+
+        <Style Selector="Window">
+            <Setter Property="Background" Value="{StaticResource BgBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+            <Setter Property="FontFamily" Value="Inter" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+        </Style>
+
+        <Style Selector="TextBlock.moduleTitle">
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="LetterSpacing" Value="1.5" />
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="TextBlock.moduleHint">
+            <Setter Property="FontSize" Value="8.5" />
+            <Setter Property="LetterSpacing" Value="0.7" />
+            <Setter Property="Foreground" Value="{StaticResource DimBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="TextBlock.tiny">
+            <Setter Property="FontSize" Value="8.5" />
+            <Setter Property="LetterSpacing" Value="1.1" />
+            <Setter Property="Foreground" Value="{StaticResource DimBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="TextBlock.mono">
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+        </Style>
+
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="{StaticResource CardBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="14" />
+        </Style>
+
+        <Style Selector="Button">
+            <Setter Property="Background" Value="{StaticResource ControlBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ControlBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <ControlTemplate TargetType="Button">
+                    <Border Name="PART_Root"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter Name="PART_ContentPresenter"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button:pointerover /template/ Border#PART_Root">
+            <Setter Property="Background" Value="#262A31" />
+            <Setter Property="BorderBrush" Value="#343941" />
+        </Style>
+
+        <Style Selector="Button:pressed /template/ Border#PART_Root">
+            <Setter Property="Background" Value="#1B1E23" />
+        </Style>
+
+        <Style Selector="Button:disabled">
+            <Setter Property="Opacity" Value="0.45" />
+        </Style>
+
+        <Style Selector="Button.icon">
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+
+        <Style Selector="Button.icon:pointerover /template/ Border#PART_Root">
+            <Setter Property="Background" Value="#22262C" />
+            <Setter Property="BorderBrush" Value="#2C3037" />
+        </Style>
+
+        <Style Selector="Button.pill">
+            <Setter Property="Width" Value="22" />
+            <Setter Property="Height" Value="22" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="#2A2E35" />
+        </Style>
+
+        <Style Selector="Button.rec">
+            <Setter Property="Width" Value="104" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="#1F2227" />
+            <Setter Property="BorderBrush" Value="#2B2F36" />
+        </Style>
+
+        <Style Selector="Button.rec.recording">
+            <Setter Property="Background" Value="#351F18" />
+            <Setter Property="BorderBrush" Value="{StaticResource AmberBrush}" />
+        </Style>
+
+        <Style Selector="Button.rec TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource AmberBrush}" />
+            <Setter Property="FontSize" Value="9.5" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="LetterSpacing" Value="0.8" />
+        </Style>
+
+        <Style Selector="ToggleButton">
+            <Setter Property="Background" Value="{StaticResource ControlBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ControlBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Padding" Value="10,5" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border Name="PART_Root"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter Name="PART_ContentPresenter"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="ToggleButton:pointerover /template/ Border#PART_Root">
+            <Setter Property="Background" Value="#262A31" />
+            <Setter Property="BorderBrush" Value="#343941" />
+        </Style>
+
+        <Style Selector="ToggleButton:checked /template/ Border#PART_Root">
+            <Setter Property="Background" Value="#223354" />
+            <Setter Property="BorderBrush" Value="#3E6FB8" />
+        </Style>
+
+        <Style Selector="ToggleButton.power">
+            <Setter Property="Width" Value="74" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="#1D2025" />
+        </Style>
+
+        <Style Selector="ToggleButton.power:checked /template/ Border#PART_Root">
+            <Setter Property="Background" Value="#1C2A41" />
+            <Setter Property="BorderBrush" Value="#3E6FB8" />
+        </Style>
+
+        <Style Selector="ToggleButton.power Ellipse">
+            <Setter Property="Fill" Value="{StaticResource DimBrush}" />
+        </Style>
+
+        <Style Selector="ToggleButton.power:checked Ellipse">
+            <Setter Property="Fill" Value="{StaticResource AccentBrush}" />
+        </Style>
+
+        <Style Selector="ToggleButton.power TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+            <Setter Property="FontSize" Value="9.5" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="LetterSpacing" Value="1.2" />
+        </Style>
+
+        <Style Selector="ToggleButton.power:checked TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+        </Style>
+
+        <Style Selector="ToggleButton.transport">
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="#1D2025" />
+            <Setter Property="BorderBrush" Value="#2A2E35" />
+        </Style>
+
+        <Style Selector="ToggleButton.transport:checked /template/ Border#PART_Root">
+            <Setter Property="Background" Value="#33241B" />
+            <Setter Property="BorderBrush" Value="{StaticResource AmberBrush}" />
+        </Style>
+
+        <Style Selector="ToggleButton.transport TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource AmberBrush}" />
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+
+        <Style Selector="ToggleButton.zoom">
+            <Setter Property="Height" Value="24" />
+            <Setter Property="Padding" Value="9,0" />
+            <Setter Property="FontSize" Value="9" />
+            <Setter Property="Background" Value="#1D2025" />
+            <Setter Property="BorderBrush" Value="#2A2E35" />
+        </Style>
+
+        <Style Selector="ToggleButton.zoom:checked /template/ Border#PART_Root">
+            <Setter Property="Background" Value="#223354" />
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+        </Style>
+
+        <Style Selector="ToggleButton.zoom TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+            <Setter Property="FontSize" Value="9" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="LetterSpacing" Value="0.8" />
+        </Style>
+
+        <Style Selector="ToggleButton.zoom:checked TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+        </Style>
+
+        <Style Selector="RadioButton.chip">
+            <Setter Property="Background" Value="#1E2126" />
+            <Setter Property="BorderBrush" Value="#2B2F36" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+            <Setter Property="FontSize" Value="9" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <ControlTemplate TargetType="RadioButton">
+                    <Border Name="PART_Chip"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="4"
+                            Padding="2,0">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="RadioButton.chip TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+        </Style>
+
+        <Style Selector="RadioButton.chip:pointerover /template/ Border#PART_Chip">
+            <Setter Property="Background" Value="#23272E" />
+            <Setter Property="BorderBrush" Value="#343941" />
+        </Style>
+
+        <Style Selector="RadioButton.chip:checked /template/ Border#PART_Chip">
+            <Setter Property="Background" Value="#223354" />
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+        </Style>
+
+        <Style Selector="RadioButton.chip:checked TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+        </Style>
+
+        <Style Selector="ToggleButton.step">
+            <Setter Property="Background" Value="#1D2025" />
+            <Setter Property="BorderBrush" Value="#272B31" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Opacity" Value="0.62" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border Name="PART_Step"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="4">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="ToggleButton.step:pointerover /template/ Border#PART_Step">
+            <Setter Property="Background" Value="#23272E" />
+            <Setter Property="BorderBrush" Value="#343941" />
+        </Style>
+
+        <Style Selector="ToggleButton.step:checked">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="ToggleButton.step:checked /template/ Border#PART_Step">
+            <Setter Property="Background" Value="#1F2B3E" />
+            <Setter Property="BorderBrush" Value="#3E6FB8" />
+        </Style>
+
+        <Style Selector="ToggleButton.step.current">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="ToggleButton.step.current /template/ Border#PART_Step">
+            <Setter Property="Background" Value="#2B2119" />
+            <Setter Property="BorderBrush" Value="{StaticResource AmberBrush}" />
+        </Style>
+
+        <Style Selector="ComboBox">
+            <Setter Property="Background" Value="#1D2025" />
+            <Setter Property="BorderBrush" Value="{StaticResource ControlBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+            <Setter Property="FontSize" Value="11.5" />
+            <Setter Property="MinHeight" Value="30" />
+            <Setter Property="Padding" Value="9,3" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style Selector="ComboBoxItem">
+            <Setter Property="FontSize" Value="11.5" />
+            <Setter Property="Padding" Value="10,5" />
+        </Style>
+
+        <Style Selector="ToolTip">
+            <Setter Property="Background" Value="#24272D" />
+            <Setter Property="BorderBrush" Value="#343941" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Padding" Value="8,4" />
+        </Style>
+
+        <Style Selector="ScrollBar:horizontal">
+            <Setter Property="Height" Value="9" />
+        </Style>
+
+        <Style Selector="ScrollBar /template/ Thumb">
+            <Setter Property="Background" Value="#3A3F47" />
+        </Style>
+
+        <Style Selector="ScrollBar /template/ Thumb:pointerover">
+            <Setter Property="Background" Value="#4F8EF7" />
+        </Style>
+
+        <Style Selector="ScrollBar /template/ RepeatButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="#5D636D" />
+        </Style>
     </Application.Styles>
 </Application>

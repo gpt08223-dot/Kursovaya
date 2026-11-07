@@ -1,119 +1,508 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:AvaloniaApplication1.ViewModels"
+        xmlns:models="using:AvaloniaApplication1.Models"
+        xmlns:audio="using:AvaloniaApplication1.AudioEngine"
+        xmlns:controls="using:AvaloniaApplication1.Controls"
+        xmlns:conv="using:AvaloniaApplication1.Converters"
         x:Class="AvaloniaApplication1.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="Полифонический синтезатор"
-        Width="780"
-        Height="600"
-        CanResize="False"
-        WindowStartupLocation="CenterScreen">
+        Title="OBSIDIAN · Studio Synthesizer"
+        Width="1280"
+        Height="820"
+        MinWidth="1180"
+        MinHeight="790"
+        CanResize="True"
+        WindowStartupLocation="CenterScreen"
+        Background="#121316"
+        Foreground="#F0F2F5">
 
-    <Window.Styles>
-        <Style Selector="TextBlock.label">
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Opacity" Value="0.75" />
-        </Style>
-        <Style Selector="ToggleButton.key">
-            <Setter Property="Height" Value="84" />
-            <Setter Property="FontSize" Value="16" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-        </Style>
-    </Window.Styles>
+    <Window.Resources>
+        <conv:EnumEqualsConverter x:Key="EnumEquals" />
+    </Window.Resources>
 
-    <Grid Margin="28" RowDefinitions="Auto,Auto,*,Auto">
-        <TextBlock Text="Полифонический синтезатор" FontSize="24" FontWeight="SemiBold" />
+    <Grid Margin="14" RowDefinitions="Auto,10,156,10,232,10,92,10,*">
 
-        <Border Grid.Row="1"
-                Margin="0,24,0,0"
-                Padding="20"
-                CornerRadius="10"
-                BorderBrush="#33808080"
-                BorderThickness="1">
-            <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="150,*">
-                <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Форма волны" />
-                <ComboBox Grid.Row="0"
-                          Grid.Column="1"
-                          HorizontalAlignment="Stretch"
-                          ItemsSource="{Binding WaveTypes}"
-                          SelectedItem="{Binding SelectedWaveType, Mode=TwoWay}" />
+        <Grid Grid.Row="0" Height="46" ColumnDefinitions="Auto,*,Auto">
+            <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                <Border Width="30"
+                        Height="30"
+                        CornerRadius="8"
+                        Background="#1D2025"
+                        BorderBrush="#2C3037"
+                        BorderThickness="1">
+                    <Path Data="M4,15 L7,9 L10,19 L13,7 L16,15 L19,11"
+                          Stroke="#4F8EF7"
+                          StrokeThickness="1.6"
+                          Width="23"
+                          Height="23"
+                          Stretch="Uniform" />
+                </Border>
+                <StackPanel Spacing="1" VerticalAlignment="Center">
+                    <TextBlock Text="OBSIDIAN"
+                               FontSize="15"
+                               FontWeight="SemiBold"
+                               LetterSpacing="2.4" />
+                    <TextBlock Text="STUDIO SYNTHESIZER"
+                               Classes="moduleHint"
+                               LetterSpacing="1.8" />
+                </StackPanel>
+            </StackPanel>
 
-                <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Margin="0,16,0,0" Text="Громкость" />
-                <Grid Grid.Row="1" Grid.Column="1" Margin="0,16,0,0" ColumnDefinitions="*,70">
-                    <Slider Minimum="0"
-                            Maximum="1"
-                            Value="{Binding Volume, Mode=TwoWay}" />
-                    <TextBlock Grid.Column="1"
-                               HorizontalAlignment="Right"
-                               VerticalAlignment="Center"
-                               Text="{Binding VolumeText}" />
-                </Grid>
+            <StackPanel Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="7"
+                        VerticalAlignment="Center"
+                        Margin="26,0,0,0">
+                <ComboBox Width="208"
+                          ItemsSource="{Binding Presets}"
+                          SelectedItem="{Binding SelectedPreset, Mode=TwoWay}"
+                          ToolTip.Tip="Заводские пресеты">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="models:SynthPreset">
+                            <TextBlock Text="{Binding Name}" FontSize="11.5" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
 
-                <TextBlock Grid.Row="2" Grid.Column="0" Classes="label" Margin="0,16,0,0" Text="Частота" />
-                <Grid Grid.Row="2" Grid.Column="1" Margin="0,16,0,0" ColumnDefinitions="*,70,Auto">
-                    <Slider Minimum="80"
-                            Maximum="1200"
-                            Value="{Binding Frequency, Mode=TwoWay}" />
-                    <TextBlock Grid.Column="1"
-                               HorizontalAlignment="Right"
-                               VerticalAlignment="Center"
-                               Text="{Binding FrequencyText}" />
-                    <ToggleButton Grid.Column="2"
-                                  Margin="14,0,0,0"
-                                  Padding="14,4"
-                                  Content="Тестовый тон"
-                                  IsChecked="{Binding IsToneOn, Mode=TwoWay}"
-                                  IsEnabled="{Binding IsRunning}" />
-                </Grid>
-            </Grid>
-        </Border>
+                <Button Classes="icon" Click="OnSavePresetClick" ToolTip.Tip="Сохранить пресет в .json">
+                    <Path Data="M10,3 L10,13 M6,9 L10,13 L14,9 M4,16 L16,16"
+                          Stroke="#8A9099"
+                          StrokeThickness="1.4"
+                          Width="16"
+                          Height="16"
+                          Stretch="Uniform" />
+                </Button>
 
-        <Border Grid.Row="2"
-                Margin="0,16,0,0"
-                Padding="20"
-                CornerRadius="10"
-                BorderBrush="#33808080"
-                BorderThickness="1">
-            <StackPanel Spacing="12">
-                <StackPanel Spacing="2">
-                    <TextBlock Text="Клавиши первой октавы" FontWeight="SemiBold" />
-                    <TextBlock Text="Запустите звук и включите несколько клавиш, чтобы проверить полифонию"
-                               FontSize="12"
-                               Opacity="0.6" />
+                <Button Classes="icon" Click="OnLoadPresetClick" ToolTip.Tip="Загрузить пресет из .json">
+                    <Path Data="M10,15 L10,5 M6,9 L10,5 L14,9 M4,16 L16,16"
+                          Stroke="#8A9099"
+                          StrokeThickness="1.4"
+                          Width="16"
+                          Height="16"
+                          Stretch="Uniform" />
+                </Button>
+
+                <Border Width="1" Height="22" Background="#282B30" Margin="5,0" />
+
+                <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+                    <TextBlock Classes="tiny" Text="OUT" />
+                    <controls:LevelMeter Width="84" Height="12" Level="{Binding OutputLevel}" />
                 </StackPanel>
 
-                <ItemsControl ItemsSource="{Binding Notes}" IsEnabled="{Binding IsRunning}">
+                <Border Width="1" Height="22" Background="#282B30" Margin="5,0" />
+
+                <StackPanel Orientation="Horizontal" Spacing="7" VerticalAlignment="Center">
+                    <TextBlock Classes="tiny" Text="VOICES" />
+                    <TextBlock Classes="mono" Text="{Binding VoicesText}" Width="54" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal"
+                        Spacing="8"
+                        VerticalAlignment="Center">
+                <TextBlock Text="{Binding StatusText}"
+                           FontSize="9.5"
+                           Foreground="#5D636D"
+                           MaxWidth="150"
+                           TextTrimming="CharacterEllipsis"
+                           VerticalAlignment="Center" />
+
+                <ToggleButton Classes="power"
+                              IsChecked="{Binding IsAudioRunning, Mode=TwoWay}"
+                              ToolTip.Tip="Включить / выключить аудиодвижок">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <Ellipse Width="6" Height="6" Fill="#4F8EF7" VerticalAlignment="Center" />
+                        <TextBlock Text="AUDIO" VerticalAlignment="Center" />
+                    </StackPanel>
+                </ToggleButton>
+
+                <Button Classes="rec"
+                        Click="OnRecordClick"
+                        Classes.recording="{Binding IsRecording}"
+                        ToolTip.Tip="Запись и экспорт в WAV">
+                    <TextBlock Text="{Binding RecordButtonText}" />
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="2" ColumnDefinitions="*,10,*">
+            <Border Classes="card" Padding="14,12">
+                <Grid RowDefinitions="Auto,*">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <Border Width="5" Height="5" CornerRadius="3" Background="#4F8EF7" VerticalAlignment="Center" />
+                            <TextBlock Classes="moduleTitle" Text="OSCILLOSCOPE" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="2" Classes="moduleHint" Text="1024 SAMPLES · 44.1 KHZ" />
+                    </Grid>
+                    <controls:OscilloscopeControl Grid.Row="1" Engine="{Binding Engine}" Margin="0,9,0,0" />
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="2" Classes="card" Padding="14,12">
+                <Grid RowDefinitions="Auto,*">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <Border Width="5" Height="5" CornerRadius="3" Background="#E58E5A" VerticalAlignment="Center" />
+                            <TextBlock Classes="moduleTitle" Text="SPECTRUM" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="2" Classes="moduleHint" Text="FFT 2048 · HANN WINDOW" />
+                    </Grid>
+                    <controls:SpectrumAnalyzerControl Grid.Row="1" Engine="{Binding Engine}" Margin="0,9,0,0" />
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Row="4" ColumnDefinitions="*,10,*,10,*,10,*">
+            <Border Classes="card">
+                <Grid RowDefinitions="Auto,*">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <Border Width="5" Height="5" CornerRadius="3" Background="#4F8EF7" VerticalAlignment="Center" />
+                            <TextBlock Classes="moduleTitle" Text="OSCILLATOR" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="2" Classes="moduleHint" Text="POLY 32" />
+                    </Grid>
+
+                    <StackPanel Grid.Row="1" Spacing="6" Margin="0,10,0,0">
+                        <UniformGrid Columns="5" Height="28">
+                            <RadioButton Classes="chip"
+                                         GroupName="WaveChip"
+                                         Margin="0,0,3,0"
+                                         IsChecked="{Binding SelectedWaveType, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static audio:WaveType.Sine}, Mode=TwoWay}">
+                                <TextBlock Text="SIN" />
+                            </RadioButton>
+                            <RadioButton Classes="chip"
+                                         GroupName="WaveChip"
+                                         Margin="0,0,3,0"
+                                         IsChecked="{Binding SelectedWaveType, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static audio:WaveType.Sawtooth}, Mode=TwoWay}">
+                                <TextBlock Text="SAW" />
+                            </RadioButton>
+                            <RadioButton Classes="chip"
+                                         GroupName="WaveChip"
+                                         Margin="0,0,3,0"
+                                         IsChecked="{Binding SelectedWaveType, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static audio:WaveType.Square}, Mode=TwoWay}">
+                                <TextBlock Text="SQR" />
+                            </RadioButton>
+                            <RadioButton Classes="chip"
+                                         GroupName="WaveChip"
+                                         Margin="0,0,3,0"
+                                         IsChecked="{Binding SelectedWaveType, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static audio:WaveType.Triangle}, Mode=TwoWay}">
+                                <TextBlock Text="TRI" />
+                            </RadioButton>
+                            <RadioButton Classes="chip"
+                                         GroupName="WaveChip"
+                                         IsChecked="{Binding SelectedWaveType, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static audio:WaveType.WhiteNoise}, Mode=TwoWay}">
+                                <TextBlock Text="NSE" />
+                            </RadioButton>
+                        </UniformGrid>
+
+                        <controls:ParamSlider Label="UNISON"
+                                              ValueText="{Binding UnisonText}"
+                                              Minimum="1"
+                                              Maximum="4"
+                                              Step="1"
+                                              Value="{Binding Unison, Mode=TwoWay}" />
+                        <controls:ParamSlider Label="DETUNE"
+                                              ValueText="{Binding DetuneText}"
+                                              Minimum="0"
+                                              Maximum="40"
+                                              Step="0.5"
+                                              Value="{Binding Detune, Mode=TwoWay}" />
+                        <controls:ParamSlider Label="VOLUME"
+                                              ValueText="{Binding VolumeText}"
+                                              Minimum="0"
+                                              Maximum="1"
+                                              Step="0.01"
+                                              Value="{Binding Volume, Mode=TwoWay}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="2" Classes="card">
+                <Grid RowDefinitions="Auto,*">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <Border Width="5" Height="5" CornerRadius="3" Background="#4F8EF7" VerticalAlignment="Center" />
+                            <TextBlock Classes="moduleTitle" Text="ENVELOPE" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="2" Classes="moduleHint" Text="ADSR" />
+                    </Grid>
+
+                    <StackPanel Grid.Row="1" Spacing="4" Margin="0,8,0,0">
+                        <controls:ParamSlider Label="ATTACK"
+                                              ValueText="{Binding AttackText}"
+                                              Minimum="1"
+                                              Maximum="2000"
+                                              Step="1"
+                                              Value="{Binding AttackMs, Mode=TwoWay}" />
+                        <controls:ParamSlider Label="DECAY"
+                                              ValueText="{Binding DecayText}"
+                                              Minimum="1"
+                                              Maximum="3000"
+                                              Step="1"
+                                              Value="{Binding DecayMs, Mode=TwoWay}" />
+                        <controls:ParamSlider Label="SUSTAIN"
+                                              ValueText="{Binding SustainText}"
+                                              Minimum="0"
+                                              Maximum="1"
+                                              Step="0.01"
+                                              Value="{Binding Sustain, Mode=TwoWay}" />
+                        <controls:ParamSlider Label="RELEASE"
+                                              ValueText="{Binding ReleaseText}"
+                                              Minimum="1"
+                                              Maximum="5000"
+                                              Step="1"
+                                              Value="{Binding ReleaseMs, Mode=TwoWay}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="4" Classes="card">
+                <Grid RowDefinitions="Auto,*">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <Border Width="5" Height="5" CornerRadius="3" Background="#4F8EF7" VerticalAlignment="Center" />
+                            <TextBlock Classes="moduleTitle" Text="FILTER" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="2" Classes="moduleHint" Text="BIQUAD" />
+                    </Grid>
+
+                    <StackPanel Grid.Row="1" Spacing="7" Margin="0,9,0,0">
+                        <UniformGrid Columns="2" Height="26">
+                            <RadioButton Classes="chip"
+                                         GroupName="FilterChip"
+                                         Margin="0,0,3,0"
+                                         IsChecked="{Binding SelectedFilterType, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static audio:FilterType.LowPass}, Mode=TwoWay}">
+                                <TextBlock Text="LOW PASS" />
+                            </RadioButton>
+                            <RadioButton Classes="chip"
+                                         GroupName="FilterChip"
+                                         IsChecked="{Binding SelectedFilterType, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static audio:FilterType.HighPass}, Mode=TwoWay}">
+                                <TextBlock Text="HIGH PASS" />
+                            </RadioButton>
+                        </UniformGrid>
+
+                        <controls:ParamSlider Label="CUTOFF"
+                                              ValueText="{Binding CutoffText}"
+                                              Minimum="0"
+                                              Maximum="1"
+                                              Step="0.001"
+                                              Value="{Binding CutoffPosition, Mode=TwoWay}" />
+                        <controls:ParamSlider Label="RESONANCE"
+                                              ValueText="{Binding ResonanceText}"
+                                              Minimum="0.5"
+                                              Maximum="12"
+                                              Step="0.1"
+                                              Value="{Binding Resonance, Mode=TwoWay}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="6" Classes="card">
+                <Grid RowDefinitions="Auto,*">
+                    <Grid ColumnDefinitions="Auto,*,Auto">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <Border Width="5" Height="5" CornerRadius="3" Background="#E58E5A" VerticalAlignment="Center" />
+                            <TextBlock Classes="moduleTitle" Text="EFFECTS" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="2" Classes="moduleHint" Text="FX RACK" />
+                    </Grid>
+
+                    <StackPanel Grid.Row="1" Spacing="7" Margin="0,9,0,0">
+                        <UniformGrid Columns="3" Height="24">
+                            <RadioButton Classes="chip"
+                                         GroupName="EffectChip"
+                                         Margin="0,0,3,0"
+                                         IsChecked="{Binding SelectedEffectTab, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static vm:EffectTab.Saturation}, Mode=TwoWay}">
+                                <TextBlock Text="SAT" />
+                            </RadioButton>
+                            <RadioButton Classes="chip"
+                                         GroupName="EffectChip"
+                                         Margin="0,0,3,0"
+                                         IsChecked="{Binding SelectedEffectTab, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static vm:EffectTab.Delay}, Mode=TwoWay}">
+                                <TextBlock Text="DLY" />
+                            </RadioButton>
+                            <RadioButton Classes="chip"
+                                         GroupName="EffectChip"
+                                         IsChecked="{Binding SelectedEffectTab, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static vm:EffectTab.Reverb}, Mode=TwoWay}">
+                                <TextBlock Text="REV" />
+                            </RadioButton>
+                        </UniformGrid>
+
+                        <StackPanel Spacing="5"
+                                    IsVisible="{Binding SelectedEffectTab, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static vm:EffectTab.Saturation}}">
+                            <controls:ParamSlider Label="DRIVE"
+                                                  ValueText="{Binding DistortionDriveText}"
+                                                  Minimum="0"
+                                                  Maximum="1"
+                                                  Step="0.01"
+                                                  Value="{Binding DistortionDrive, Mode=TwoWay}" />
+                            <controls:ParamSlider Label="MIX"
+                                                  ValueText="{Binding DistortionMixText}"
+                                                  Minimum="0"
+                                                  Maximum="1"
+                                                  Step="0.01"
+                                                  Value="{Binding DistortionMix, Mode=TwoWay}" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="5"
+                                    IsVisible="{Binding SelectedEffectTab, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static vm:EffectTab.Delay}}">
+                            <controls:ParamSlider Label="TIME"
+                                                  ValueText="{Binding DelayTimeText}"
+                                                  Minimum="20"
+                                                  Maximum="800"
+                                                  Step="1"
+                                                  Value="{Binding DelayTimeMs, Mode=TwoWay}" />
+                            <controls:ParamSlider Label="FEEDBACK"
+                                                  ValueText="{Binding DelayFeedbackText}"
+                                                  Minimum="0"
+                                                  Maximum="0.85"
+                                                  Step="0.01"
+                                                  Value="{Binding DelayFeedback, Mode=TwoWay}" />
+                            <controls:ParamSlider Label="MIX"
+                                                  ValueText="{Binding DelayMixText}"
+                                                  Minimum="0"
+                                                  Maximum="1"
+                                                  Step="0.01"
+                                                  Value="{Binding DelayMix, Mode=TwoWay}" />
+                        </StackPanel>
+
+                        <StackPanel Spacing="5"
+                                    IsVisible="{Binding SelectedEffectTab, Converter={StaticResource EnumEquals}, ConverterParameter={x:Static vm:EffectTab.Reverb}}">
+                            <controls:ParamSlider Label="ROOM SIZE"
+                                                  ValueText="{Binding ReverbRoomText}"
+                                                  Minimum="0"
+                                                  Maximum="1"
+                                                  Step="0.01"
+                                                  Value="{Binding ReverbRoom, Mode=TwoWay}" />
+                            <controls:ParamSlider Label="MIX"
+                                                  ValueText="{Binding ReverbMixText}"
+                                                  Minimum="0"
+                                                  Maximum="1"
+                                                  Step="0.01"
+                                                  Value="{Binding ReverbMix, Mode=TwoWay}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="6" Classes="card" Padding="12">
+            <Grid ColumnDefinitions="Auto,14,Auto,14,Auto,*,Auto" Height="64">
+                <ToggleButton Classes="transport"
+                              IsChecked="{Binding IsSequencerPlaying, Mode=TwoWay}"
+                              VerticalAlignment="Center"
+                              ToolTip.Tip="Запустить / остановить 16-шаговый секвенсор">
+                    <TextBlock Text="{Binding PlayGlyph}" />
+                </ToggleButton>
+
+                <controls:ParamSlider Grid.Column="2"
+                                      Width="170"
+                                      VerticalAlignment="Center"
+                                      Label="TEMPO"
+                                      ValueText="{Binding BpmText}"
+                                      Minimum="60"
+                                      Maximum="200"
+                                      Step="1"
+                                      Value="{Binding Bpm, Mode=TwoWay}" />
+
+                <StackPanel Grid.Column="4" Width="170" Spacing="4" VerticalAlignment="Center">
+                    <TextBlock Classes="tiny" Text="PATTERN" />
+                    <ComboBox Height="30"
+                              ItemsSource="{Binding Patterns}"
+                              SelectedItem="{Binding SelectedPattern, Mode=TwoWay}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="models:SequencerPattern">
+                                <TextBlock Text="{Binding Name}" FontSize="11.5" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                </StackPanel>
+
+                <ItemsControl Grid.Column="5"
+                              Margin="16,0,0,0"
+                              ItemsSource="{Binding Steps}"
+                              VerticalAlignment="Center">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <UniformGrid Columns="7" />
+                            <UniformGrid Columns="16" />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
-                        <DataTemplate x:DataType="vm:NoteKeyViewModel">
-                            <ToggleButton Classes="key"
-                                          Margin="3"
-                                          Content="{Binding Name}"
-                                          IsChecked="{Binding IsActive, Mode=TwoWay}" />
+                        <DataTemplate x:DataType="vm:SequencerStepViewModel">
+                            <ToggleButton Classes="step"
+                                          Height="60"
+                                          Margin="0,0,3,0"
+                                          IsChecked="{Binding IsEnabled, Mode=TwoWay}"
+                                          Classes.current="{Binding IsCurrent}">
+                                <StackPanel VerticalAlignment="Center" Spacing="2">
+                                    <TextBlock Text="{Binding NoteName}"
+                                               FontSize="10"
+                                               FontWeight="SemiBold"
+                                               Foreground="#E8EAED"
+                                               HorizontalAlignment="Center" />
+                                    <TextBlock Text="{Binding IndexText}"
+                                               FontSize="8"
+                                               Foreground="#5D636D"
+                                               HorizontalAlignment="Center" />
+                                </StackPanel>
+                            </ToggleButton>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <TextBlock Text="{Binding ActiveNotesText}" FontSize="13" Opacity="0.7" />
-            </StackPanel>
+                <TextBlock Grid.Column="6"
+                           Classes="moduleHint"
+                           Text="16 STEPS"
+                           Margin="12,0,0,0"
+                           VerticalAlignment="Center" />
+            </Grid>
         </Border>
 
-        <StackPanel Grid.Row="3" Margin="0,20,0,0" Orientation="Horizontal" Spacing="10">
-            <Button Content="Запустить звук"
-                    MinWidth="150"
-                    Command="{Binding StartAudioCommand}"
-                    IsEnabled="{Binding !IsRunning}" />
-            <Button Content="Остановить звук"
-                    MinWidth="150"
-                    Command="{Binding StopAudioCommand}"
-                    IsEnabled="{Binding IsRunning}" />
-        </StackPanel>
+        <Border Grid.Row="8" Classes="card" Padding="12">
+            <Grid RowDefinitions="Auto,*">
+                <Grid ColumnDefinitions="Auto,*,Auto" Height="24">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Border Width="5" Height="5" CornerRadius="3" Background="#4F8EF7" VerticalAlignment="Center" />
+                        <TextBlock Classes="moduleTitle" Text="KEYBOARD" />
+                        <TextBlock Classes="moduleHint" Text="88 KEYS · A0 – C8" VerticalAlignment="Center" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                        <TextBlock Classes="tiny" Text="PC KEYS Z – / · Q – P" />
+                        <Border Width="1" Height="16" Background="#282B30" Margin="4,0" />
+                        <TextBlock Classes="tiny" Text="OCT" />
+                        <Button Classes="pill" Command="{Binding OctaveDownCommand}" Content="−" />
+                        <TextBlock Classes="mono"
+                                   Text="{Binding OctaveText}"
+                                   Width="26"
+                                   TextAlignment="Center"
+                                   VerticalAlignment="Center" />
+                        <Button Classes="pill" Command="{Binding OctaveUpCommand}" Content="+" />
+                        <Border Width="1" Height="16" Background="#282B30" Margin="4,0" />
+                        <ToggleButton Classes="zoom"
+                                      IsChecked="{Binding IsKeyboardZoomed, Mode=TwoWay}"
+                                      ToolTip.Tip="Все 88 клавиш на экране / крупный вид со скроллом">
+                            <TextBlock Text="SCROLL" />
+                        </ToggleButton>
+                    </StackPanel>
+                </Grid>
+
+                <ScrollViewer Grid.Row="1"
+                              x:Name="PianoScroll"
+                              Margin="0,8,0,0"
+                              HorizontalScrollBarVisibility="{Binding PianoScrollVisibility}"
+                              VerticalScrollBarVisibility="Disabled"
+                              AllowAutoHide="False"
+                              Background="Transparent">
+                    <controls:PianoKeyboard Engine="{Binding Engine}"
+                                            WhiteKeyWidth="{Binding PianoWhiteKeyWidth}"
+                                            HorizontalAlignment="Left" />
+                </ScrollViewer>
+            </Grid>
+        </Border>
     </Grid>
 </Window>
